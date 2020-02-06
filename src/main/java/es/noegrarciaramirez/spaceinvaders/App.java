@@ -35,9 +35,11 @@ public class App extends Application {
     int posicionNave1 = -50;//centro
     int posicionNave2 = -120;//izquierda
     int posicionNave3 = -190;//derecha
+    
     //Nave Jugador
     int posicionNaveJugador;//Posición nave jugador en la X
-    final short velocidadMovNave = 5;
+    short velocidadMovNave = 0;
+    short direccionNave=1;
     
     
     //Disparo Nave
@@ -50,13 +52,19 @@ public class App extends Application {
     int groupPrimeraNaveY = -50;
     int groupSegundaNaveY = -120;
     int groupTerceraNaveY = -190;
+    
     //Velocidad naves enemigas
     short velocidadNavesEnemigas = 2;
+    
     //Contador de impactos a cada nave
     short numImpactos1 = 0;
     short numImpactos2 = 0;
     short numImpactos3 = 0;
-    
+
+    //Boss1
+    int movimientoXBoss1 = 0;
+    int velociadadBoss1 = 7;
+    int direccionBoss1 = 1;
     //Contador de puntucación
     int score = 0;
 
@@ -72,32 +80,39 @@ public class App extends Application {
         //Primera y segunda imagen del fondo para bucle
         Image image1 = new Image(getClass().getResourceAsStream("/images/fondo.png"));
         ImageView imageView1 = new ImageView(image1);
-        
+
         Image image2 = new Image(getClass().getResourceAsStream("/images/fondo2.png"));
         ImageView imageView2 = new ImageView(image2);
-        
-        //Imagen Boss Final
+
+        //Imagen Boss1
         Image image3 = new Image(getClass().getResourceAsStream("/images/bossFinal.png"));
         ImageView bossF = new ImageView(image3);
 
          //Imagen Mi nave
         Image image4 = new Image(getClass().getResourceAsStream("/images/naveUser.png"));
         ImageView naveUser = new ImageView(image4);
-        
+
         //Disparo de la nave verde 1
         //Disparo de la nave rojo 2
         Image image5 = new Image(getClass().getResourceAsStream("/images/disparoDeNave.png"));
         ImageView disparoRojo = new ImageView(image5);
         
-        //Boss
+        //Boss1
         Rectangle hbBossF = new Rectangle(100, 100);
         Color c = new Color(0,0,0,0.0);
         hbBossF.setFill(c);
 
         Group groupBoss1 = new Group();
-        groupBoss1.getChildren().add(hbBossF);
-        groupBoss1.getChildren().add(bossF);
+        groupBoss1.getChildren().add(hbBossF);//rectangulo como hitbox
+        groupBoss1.getChildren().add(bossF);//imagen
         groupBoss1.setLayoutX(SCENE);
+        //Disparo del Boss1
+        Circle hBdisparo1Boss1 = new Circle(10/*radio*/);
+        hBdisparo1Boss1.setFill(c);
+        /*Group grupoDisp1Boss1 = new Group();
+        grupoDisp1Boss1.getChildren().add(hBdisparo1Boss1);
+        grupoDisp1Boss1.getChildren().add(hBdisparo1Boss1);
+        */
         
         //Disparo rojo
         
@@ -112,6 +127,7 @@ public class App extends Application {
         
         //Crear número aleatorio para la X de las naves enemigas
         Random random = new Random();
+
         //Cuerpo Nave 1 centro Verde
         Rectangle cuerpoNave1 = new Rectangle(xAlasNave, yAlasNave);//ala izquierda
         cuerpoNave1.setFill(Color.GREEN);
@@ -220,7 +236,6 @@ public class App extends Application {
         root.getChildren().add(imageView1);
         root.getChildren().add(imageView2);
         root.getChildren().add(naveUser);
-        root.getChildren().add(bossF);
         root.getChildren().add(groupPrimeraNave);
         root.getChildren().add(groupSegundaNave);
         root.getChildren().add(groupTerceraNave);
@@ -234,13 +249,13 @@ public class App extends Application {
             public void handle (final KeyEvent keyEvent){
                 switch(keyEvent.getCode()){
                     case LEFT:
-                        posicionNaveJugador-=velocidadMovNave;
-                        naveUser.setX(posicionNaveJugador);
+                        direccionNave = -1;
+                        velocidadMovNave = 3;
                     break;
                     
                     case RIGHT:
-                        posicionNaveJugador+=velocidadMovNave;
-                        naveUser.setX(posicionNaveJugador);
+                        direccionNave = 1;
+                        velocidadMovNave = 3;
                     break;
                     
                     case SPACE:
@@ -248,18 +263,23 @@ public class App extends Application {
                         groupDisparo.setLayoutX(posicionNaveJugador+28);
                         groupDisparo.setLayoutY(posicionDisparoDentroY);
                         random.nextInt(SCENE-40);//genera num aleatorio para darselo a la X de las naves enemigas
-                        System.out.println("Score "+score);
                     break;
                 }
             }
         });
-
+        scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(final KeyEvent keyEvent) {
+                direccionNave = 0;
+            }
+        });
         //Bucle de fondo y naves enemigas
         Timeline timeline = new Timeline(
             new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
                 @SuppressWarnings("empty-statement")
                 public void handle(ActionEvent ae) {
                     
+                    naveUser.setX(posicionNaveJugador);
+                    posicionNaveJugador += velocidadMovNave * direccionNave;
                     //impacto de disparo con nave 1
                     Shape shapeCollision = Shape.intersect(hB1, hitBoxDisparo);
                     boolean colisionVacia = shapeCollision.getBoundsInLocal().isEmpty();
@@ -271,6 +291,7 @@ public class App extends Application {
                         groupPrimeraNave.setLayoutX(600);
                         numImpactos1+=1;
                         score+=50;
+                        System.out.println("Score "+score);
                     }
 
                     //impacto de disparo con nave 2
@@ -284,6 +305,7 @@ public class App extends Application {
                         groupSegundaNave.setLayoutX(600);
                         numImpactos2+=1;
                         score+=50;
+                        System.out.println("Score "+score);
                     }                    
 
                     //impacto de disparo con nave 3
@@ -297,6 +319,7 @@ public class App extends Application {
                         groupTerceraNave.setLayoutX(600);
                         numImpactos3+=1;
                         score+=50;
+                        System.out.println("Score "+score);
                     }
                     
                     //Impacto con Boss1
@@ -307,14 +330,15 @@ public class App extends Application {
                         groupDisparo.setLayoutX(posicionDisparoFuera);
                         groupDisparo.setLayoutY(posicionDisparoFuera);
                         posicionDisparoDentroY = 430;
-                        groupPrimeraNave.setLayoutX(600);
                         score+=150;
+                        System.out.println("Score " +score);
                     }
+                    //Movimiento del Boss1
                     
                     
                     //Salidad el disparo desde la nave
                     if (disparo == true){
-                    posicionDisparoDentroY-=6;
+                    posicionDisparoDentroY-=9;
                     groupDisparo.setLayoutY(posicionDisparoDentroY);
                     }
                     //Impedir que la nave se salga de los lados
@@ -385,7 +409,11 @@ public class App extends Application {
                     }
                     //Sale el boss si impacta con cualquier nave 6 veces
                     if((numImpactos1>=6) || (numImpactos2>=6) || (numImpactos3>=6)){
-                        bossF.setX((SCENE/2)-(50));
+                        movimientoXBoss1 += velociadadBoss1 * direccionBoss1;
+                        groupBoss1.setLayoutX(movimientoXBoss1);
+                        if(movimientoXBoss1<=0 || movimientoXBoss1>=(SCENE-90)){
+                            direccionBoss1*= -1;
+                        }
                     }
                 }
             })
