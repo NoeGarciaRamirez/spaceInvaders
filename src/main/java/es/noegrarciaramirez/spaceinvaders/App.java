@@ -19,6 +19,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.util.Random;
+import javafx.scene.layout.StackPane;
 
 /**
  * JavaFX App
@@ -41,7 +42,25 @@ public class App extends Application {
     short velocidadMovNave = 0;
     short direccionNave=1;
     
+    short vidasJugador = 3;
     
+    short corazon1PosicionX = 5;
+    short corazon2PosicionX = 5;
+    short corazon3PosicionX = 5;
+
+    //Corazon 1
+    Image image9 = new Image(getClass().getResourceAsStream("/images/corazon1.png"));
+    ImageView corazon1 = new ImageView(image9);    
+
+
+    //Corazon 2
+    Image image10 = new Image(getClass().getResourceAsStream("/images/corazon2.png"));
+    ImageView corazon2 = new ImageView(image10);
+
+    //Corazon 3
+    Image image11 = new Image(getClass().getResourceAsStream("/images/corazon3.png"));
+    ImageView corazon3 = new ImageView(image11);
+        
     //Disparo Nave
     final short posicionDisparoFuera = 600;//Para la X e Y, que no aparezca el disparo en pantalla
     short posicionDisparoDentroX = 248;
@@ -65,12 +84,15 @@ public class App extends Application {
     int movimientoXBoss1 = 0;
     int velociadadBoss1 = 7;
     int direccionBoss1 = 1;
+    //Disparo del Boss 1
+    int yDisparoBoss1 = 100;
     //Contador de puntucación
     int score = 0;
 
+    
     @Override
     public void start(Stage stage) {
-
+        
         Pane root = new Pane();
         var scene = new Scene(root, SCENE, SCENE);
         stage.setResizable(false);
@@ -88,14 +110,37 @@ public class App extends Application {
         Image image3 = new Image(getClass().getResourceAsStream("/images/bossFinal.png"));
         ImageView bossF = new ImageView(image3);
 
-         //Imagen Mi nave
+         //Imagen Nave del Jugador
         Image image4 = new Image(getClass().getResourceAsStream("/images/naveUser.png"));
         ImageView naveUser = new ImageView(image4);
 
-        //Disparo de la nave verde 1
-        //Disparo de la nave rojo 2
+        //Disparo de la nave Jugador
         Image image5 = new Image(getClass().getResourceAsStream("/images/disparoDeNave.png"));
         ImageView disparoRojo = new ImageView(image5);
+
+        //Imagen Boss2
+        //Image image6 = new Image(getClass().getResourceAsStream("/images/bossFinal2.png"));
+        //ImageView boss2 = new ImageView(image6);
+
+        //Disparo de boss1
+        Image image7 = new Image(getClass().getResourceAsStream("/images/disparoBoss1.png"));
+        ImageView disparoBoss1 = new ImageView(image7);        
+        
+        //Disparo de boss2
+        //Image image8 = new Image(getClass().getResourceAsStream("/images/disparoBoss2.png"));
+        //ImageView disparoBoss2 = new ImageView(image8);
+
+
+
+        //Vidas Jugador
+        corazon3.setX(corazon1PosicionX);
+        corazon3.setY(390);
+        
+        corazon2.setX(corazon2PosicionX);
+        corazon2.setY(415);
+        
+        corazon1.setX(corazon3PosicionX);
+        corazon1.setY(440);
         
         //Boss1
         Rectangle hbBossF = new Rectangle(100, 100);
@@ -106,15 +151,29 @@ public class App extends Application {
         groupBoss1.getChildren().add(hbBossF);//rectangulo como hitbox
         groupBoss1.getChildren().add(bossF);//imagen
         groupBoss1.setLayoutX(SCENE);
-        //Disparo del Boss1
-        Circle hBdisparo1Boss1 = new Circle(10/*radio*/);
-        hBdisparo1Boss1.setFill(c);
-        /*Group grupoDisp1Boss1 = new Group();
-        grupoDisp1Boss1.getChildren().add(hBdisparo1Boss1);
-        grupoDisp1Boss1.getChildren().add(hBdisparo1Boss1);
-        */
         
-        //Disparo rojo
+        //Disparo del Boss 1
+        disparoBoss1.setFitWidth(20);
+        disparoBoss1.setFitHeight(33);
+        Rectangle hbDisparoBoss1 = new Rectangle(20, 33);
+        hbDisparoBoss1.setFill(c);
+        
+        Group grupoDisparoBoss1 = new Group();
+        grupoDisparoBoss1.getChildren().add(disparoBoss1);
+        grupoDisparoBoss1.getChildren().add(hbDisparoBoss1);
+        grupoDisparoBoss1.setLayoutX(SCENE);
+        
+        //Disparo del Boss 2
+//        Circle hBdisparo1Boss1 = new Circle(9/*radio*/);
+//        hBdisparo1Boss1.setCenterX(9);
+//        hBdisparo1Boss1.setCenterY(9);
+//        hBdisparo1Boss1.setFill(c);
+//        Group grupoDisp1Boss1 = new Group();
+//        grupoDisp1Boss1.getChildren().add(hBdisparo1Boss1);
+//        grupoDisp1Boss1.getChildren().add(disparoBoss1);
+
+        
+        //Disparo Jugador
         
         Rectangle hitBoxDisparo = new Rectangle (5, 13);//Rectangulo del disparo
         Group groupDisparo = new Group();
@@ -215,10 +274,20 @@ public class App extends Application {
         //Nave del jugador
         naveUser.setFitHeight(60);
         naveUser.setFitWidth(60);
-        posicionNaveJugador = (int) ((SCENE/2)-(naveUser.getFitWidth()/2));
-        naveUser.setX(posicionNaveJugador);
-        naveUser.setY(SCENE-65);
         
+        Rectangle hbNaveJ = new Rectangle(60, 60);
+        hbNaveJ.setFill(c);
+        
+        Group grupoNaveJ = new Group();
+        grupoNaveJ.getChildren().add(hbNaveJ);
+        grupoNaveJ.getChildren().add(naveUser);
+        
+        posicionNaveJugador = (int) ((SCENE/2)-(naveUser.getFitWidth()/2));
+        
+        grupoNaveJ.setLayoutX(posicionNaveJugador);
+        grupoNaveJ.setLayoutY(SCENE-65);
+
+
 
         //Tamaño autoajustado al de la ventana
         imageView1.setFitHeight(SCENE);
@@ -235,13 +304,16 @@ public class App extends Application {
         //Poner las cosas en pantalla
         root.getChildren().add(imageView1);
         root.getChildren().add(imageView2);
-        root.getChildren().add(naveUser);
-        root.getChildren().add(groupPrimeraNave);
+        root.getChildren().add(groupPrimeraNave);//3 naves enemigas
         root.getChildren().add(groupSegundaNave);
         root.getChildren().add(groupTerceraNave);
-        root.getChildren().add(groupDisparo);
         root.getChildren().add(groupBoss1);
-        
+        root.getChildren().add(grupoNaveJ);
+        root.getChildren().add(groupDisparo);
+        root.getChildren().add(corazon1);
+        root.getChildren().add(corazon2);
+        root.getChildren().add(corazon3);
+        root.getChildren().add(grupoDisparoBoss1);
 
 
         //Movimiento de la naveJugador
@@ -263,6 +335,7 @@ public class App extends Application {
                         groupDisparo.setLayoutX(posicionNaveJugador+28);
                         groupDisparo.setLayoutY(posicionDisparoDentroY);
                         random.nextInt(SCENE-40);//genera num aleatorio para darselo a la X de las naves enemigas
+                        grupoDisparoBoss1.setLayoutX(movimientoXBoss1 + 42);
                     break;
                 }
             }
@@ -278,7 +351,7 @@ public class App extends Application {
                 @SuppressWarnings("empty-statement")
                 public void handle(ActionEvent ae) {
                     
-                    naveUser.setX(posicionNaveJugador);
+                    grupoNaveJ.setLayoutX(posicionNaveJugador);
                     posicionNaveJugador += velocidadMovNave * direccionNave;
                     //impacto de disparo con nave 1
                     Shape shapeCollision = Shape.intersect(hB1, hitBoxDisparo);
@@ -333,10 +406,54 @@ public class App extends Application {
                         score+=150;
                         System.out.println("Score " +score);
                     }
-                    //Movimiento del Boss1
+
+                    //colision de NaveJugador con Nave1
+                    Shape shapeCollision5 = Shape.intersect(hbNaveJ, hB1);
+                    boolean colisionVacia5 = shapeCollision5.getBoundsInLocal().isEmpty();
+                    if (colisionVacia5 == false) {
+                        disparo = false;
+                        groupDisparo.setLayoutX(posicionDisparoFuera);
+                        groupDisparo.setLayoutY(posicionDisparoFuera);
+                        posicionDisparoDentroY = 430;
+                        groupPrimeraNave.setLayoutX(600);
+                        score-=1500;
+                        System.out.println("Score "+score);
+                        //Quitar vidas al jugador según el corazón que le falte
+                        quitarVidasJugador();
+                    }
+                    //colision de NaveJugador con Nave2
+                    Shape shapeCollision6 = Shape.intersect(hbNaveJ, hB2);
+                    boolean colisionVacia6 = shapeCollision6.getBoundsInLocal().isEmpty();
+                    if (colisionVacia6 == false) {
+                        disparo = false;
+                        groupDisparo.setLayoutX(posicionDisparoFuera);
+                        groupDisparo.setLayoutY(posicionDisparoFuera);
+                        posicionDisparoDentroY = 430;
+                        groupSegundaNave.setLayoutX(600);
+                        numImpactos3+=1;
+                        score-=1500;
+                        System.out.println("Score "+score);
+                        
+                        quitarVidasJugador();
+                    }
                     
+                    //colision de NaveJugador con Nave3
+                    Shape shapeCollision7 = Shape.intersect(hbNaveJ, hB3);
+                    boolean colisionVacia7 = shapeCollision7.getBoundsInLocal().isEmpty();
+                    if (colisionVacia7 == false) {
+                        disparo = false;
+                        groupDisparo.setLayoutX(posicionDisparoFuera);
+                        groupDisparo.setLayoutY(posicionDisparoFuera);
+                        posicionDisparoDentroY = 430;
+                        groupTerceraNave.setLayoutX(600);
+                        numImpactos3+=1;
+                        score-=1500;
+                        System.out.println("Score "+score);
+                        
+                        quitarVidasJugador();
+                    }
                     
-                    //Salidad el disparo desde la nave
+                    //Salida del disparo desde la nave
                     if (disparo == true){
                     posicionDisparoDentroY-=9;
                     groupDisparo.setLayoutY(posicionDisparoDentroY);
@@ -408,11 +525,32 @@ public class App extends Application {
                         velocidadNavesEnemigas=3;
                     }
                     //Sale el boss si impacta con cualquier nave 6 veces
-                    if((numImpactos1>=6) || (numImpactos2>=6) || (numImpactos3>=6)){
+                    if((numImpactos1>=1) || (numImpactos2>=1) || (numImpactos3>=1)){
                         movimientoXBoss1 += velociadadBoss1 * direccionBoss1;
                         groupBoss1.setLayoutX(movimientoXBoss1);
+                        yDisparoBoss1+=6;
+                        
+                        grupoDisparoBoss1.setLayoutY(yDisparoBoss1);
+                        
                         if(movimientoXBoss1<=0 || movimientoXBoss1>=(SCENE-90)){
                             direccionBoss1*= -1;
+                        }
+                        
+                        if(yDisparoBoss1 >= 900){
+                            yDisparoBoss1 = 90;
+                            grupoDisparoBoss1.setLayoutY(yDisparoBoss1);
+                        }
+                        
+                        //Colisión del disparo del Boss 1 con el Jugador
+                        Shape shapeCollision8 = Shape.intersect(hbNaveJ, hbDisparoBoss1);
+                        boolean colisionVacia8 = shapeCollision8.getBoundsInLocal().isEmpty();
+                        if (colisionVacia8 == false) {
+                            yDisparoBoss1 = -100;
+                            grupoDisparoBoss1.setLayoutY(yDisparoBoss1);
+                        
+                            score-=500;
+                            System.out.println("Score "+score);
+                            quitarVidasJugador();
                         }
                     }
                 }
@@ -422,11 +560,22 @@ public class App extends Application {
         timeline.play();
 
     }
-/*
-    private void crearNaves(){
-        
+    //Qutiar el corazón que corresponda
+    private void quitarVidasJugador(){
+        if(corazon3PosicionX == 5){
+            corazon3PosicionX=SCENE;
+            corazon3.setX(corazon3PosicionX);
+            } else { if ((corazon2PosicionX == 5)){
+                corazon2PosicionX=SCENE;
+                corazon2.setX(corazon2PosicionX);
+                } else { if ((corazon1PosicionX == 5)){
+                    corazon1PosicionX=SCENE;
+                    corazon1.setX(corazon2PosicionX);
+                }
+            }
+        }
     }
-*/
+
     public static void main(String[] args) {
         launch();
     }
