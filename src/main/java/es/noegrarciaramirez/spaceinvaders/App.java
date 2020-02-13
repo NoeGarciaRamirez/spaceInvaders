@@ -23,7 +23,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import static javafx.scene.paint.Color.RED;
 import static javafx.scene.paint.Color.WHITE;
+import javafx.scene.text.Font;
 
 /**
  * JavaFX App
@@ -46,7 +48,7 @@ public class App extends Application {
     short velocidadMovNave = 0;
     short direccionNave=1;
     
-    short vidasJugador = 3;
+    short contadorVidasJugador = 3;
     
     short corazon1PosicionX = 5;
     short corazon2PosicionX = 5;
@@ -91,15 +93,22 @@ public class App extends Application {
     short contadorImpactosJefe = 0;
     //Disparo del Boss 1
     int yDisparoBoss1 = 100;
-    //Contador de puntucación
+    //Contador de puntucación y puntuacón max
     int score = 0;
-    Label label = new Label();
+    int highscore;
+    //Etiquetas
+    Label labelPuntuacion = new Label();
+    Label labelHighscore = new Label();
+    Label labelFinPartida = new Label();
     //Pantalla inicial del juego
     Button buttonEmpezar = new Button("Empezar partida");
-    
+    //Pantalla de reinicio de partida
+    Button buttonReiniciar = new Button("Reiniciar");
+
+
     VBox vbox = new VBox();
     Timeline timeline;
-    
+
     @Override
     public void start(Stage stage) {
         
@@ -111,12 +120,26 @@ public class App extends Application {
         stage.setTitle("Space Invaders 0.9");
         
         //Etiqueta con puntuación
-        label.relocate(10, 10);
-        label.setTextFill(WHITE);
+        labelPuntuacion.relocate(10, 10);
+        labelPuntuacion.setTextFill(WHITE);
+        
+        //Etiqueta puntuación Max
+        labelHighscore.relocate(100, 10);
+        labelHighscore.setTextFill(RED);
+        
+        //Etiqueta fin de partida
+        labelFinPartida.setVisible(false);
+        labelFinPartida.relocate((SCENE/2)-30, (SCENE/2)-80);
+        labelFinPartida.setTextFill(WHITE);
+        labelFinPartida.setText("GAME OVER");
+        labelFinPartida.setMinWidth(400);
+        labelFinPartida.setMaxWidth(400);
+        labelFinPartida.setFont(new Font("Aclonica", 30));
         
         //Pantalla de inicio del juego
-        
         vbox.getChildren().add(buttonEmpezar);
+        vbox.getChildren().add(buttonReiniciar);
+        buttonReiniciar.setVisible(false);
         vbox.setVisible(true);
         
         //Primera y segunda imagen del fondo para bucle
@@ -143,15 +166,13 @@ public class App extends Application {
         ImageView disparoBoss1 = new ImageView(image6);  
         
         //Imagen Boss2
-        Image image7 = new Image(getClass().getResourceAsStream("/images/bossFinal2.png"));
-        ImageView boss2 = new ImageView(image7);
+//        Image image7 = new Image(getClass().getResourceAsStream("/images/bossFinal2.png"));
+//        ImageView boss2 = new ImageView(image7);
         
         
         //Disparo de boss2
         //Image image8 = new Image(getClass().getResourceAsStream("/images/disparoBoss2.png"));
         //ImageView disparoBoss2 = new ImageView(image8);
-
-
 
         //Vidas Jugador
         corazon3.setX(corazon1PosicionX);
@@ -335,7 +356,9 @@ public class App extends Application {
         root.getChildren().add(corazon2);
         root.getChildren().add(corazon3);
         root.getChildren().add(grupoDisparoBoss1);
-        root.getChildren().add(label);
+        root.getChildren().add(labelPuntuacion);
+        root.getChildren().add(labelHighscore);
+        root.getChildren().add(labelFinPartida);
         root.getChildren().add(vbox);
 
 
@@ -368,13 +391,19 @@ public class App extends Application {
             }
         });
 
-        //Bucle de fondo y naves enemigas
-        Timeline timeline = new Timeline(
+        //Bucle
+        timeline = new Timeline(
             new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
                 @SuppressWarnings("empty-statement")
                 public void handle(ActionEvent ae) {
-                    
-                    label.setText("Score " + score);//Obtener puntuacion
+                 
+                    //labelHighscore
+                    labelPuntuacion.setText("Score " + score);//Obtener puntuacion
+                    //Comprobar si Highscore es mayor a la puntuación del jugador, y actualizarla en partida si es así
+                    if(score>=highscore){
+                        highscore=score;
+                        labelHighscore.setText("HighScore " + highscore);
+                    }
                     
                     grupoNaveJ.setLayoutX(posicionNaveJugador);
                     posicionNaveJugador += velocidadMovNave * direccionNave;
@@ -429,7 +458,6 @@ public class App extends Application {
                         
                         contadorImpactosJefe+=1;
                     }
-                    
                     //colision de NaveJugador con Nave1
                     Shape shapeCollision5 = Shape.intersect(hbNaveJ, hB1);
                     boolean colisionVacia5 = shapeCollision5.getBoundsInLocal().isEmpty();
@@ -442,6 +470,7 @@ public class App extends Application {
                         score-=1500;
                         //Quitar vidas al jugador según el corazón que le falte
                         quitarVidasJugador();
+                        contadorVidasJugador-=1;
                     }
                     //colision de NaveJugador con Nave2
                     Shape shapeCollision6 = Shape.intersect(hbNaveJ, hB2);
@@ -456,6 +485,7 @@ public class App extends Application {
                         score-=1500;
                         
                         quitarVidasJugador();
+                        contadorVidasJugador-=1;
                     }
                     
                     //colision de NaveJugador con Nave3
@@ -471,6 +501,7 @@ public class App extends Application {
                         score-=1500;
                         
                         quitarVidasJugador();
+                        contadorVidasJugador-=1;
                     }
                     
                     //Salida del disparo desde la nave
@@ -509,7 +540,7 @@ public class App extends Application {
                     groupTerceraNaveY +=velocidadNavesEnemigas;
                     groupTerceraNave.setLayoutY (groupTerceraNaveY);
                     
-                    //bucle de imagen
+                    //bucle de fondo
                     if (posicionFondo == SCENE){
                         posicionFondo = 0;
                         posicionFondo2 = -SCENE;
@@ -531,6 +562,21 @@ public class App extends Application {
                         groupTerceraNaveY = -50;
                         groupTerceraNave.setLayoutY(-190);
                         groupTerceraNave.setLayoutX (random.nextInt(SCENE-40));
+                    }
+                    
+                    //Parar partida si Jugador llega a 0 vidas
+                    if(contadorVidasJugador==0){
+                        System.out.println("contador = 0");
+                        vbox.setVisible(true);
+                        buttonEmpezar.setVisible(false);
+                        buttonReiniciar.setVisible(true);
+                        labelFinPartida.relocate((SCENE/2)-70, (SCENE/2)-30);
+                        labelHighscore.relocate((SCENE/2)-20, (SCENE/2)+20);
+                        labelPuntuacion.relocate((SCENE/2)-20, (SCENE/2)+40);
+                        labelHighscore.setVisible(true);
+                        labelPuntuacion.setVisible(true);
+                        labelFinPartida.setVisible(true);
+                        timeline.stop();
                     }
                     
                     //Si impacta 3 veces en una nave, esa nave va más rápido
@@ -577,14 +623,20 @@ public class App extends Application {
                         
                             score-=500;
                             quitarVidasJugador();
+                            contadorVidasJugador-=1;
                         }
                     }
                 }
             })
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        timeline.stop();
 
+        
+        buttonEmpezar.setOnAction((ActionEvent e)-> {//Qutia la vbox al presionar el botón
+            vbox.setVisible(false);
+            timeline.play();
+        });
     }
 
 
@@ -605,11 +657,24 @@ public class App extends Application {
     }
 
     private void terminarPartida() {
-        vbox.setVisible(false);
+        vbox.setVisible(true);
         buttonEmpezar.setVisible(false);
-        timeline.pause();
+        buttonReiniciar.setVisible(true);
+        timeline.stop();
     }
     
+    private void reiniciarPartida() {
+        vbox.setVisible(false);
+        buttonEmpezar.setVisible(false);
+        buttonReiniciar.setVisible(true);
+        timeline.play();
+    }
+
+    private void comenzarPartida() {
+        vbox.setVisible(false);
+        buttonEmpezar.setVisible(false);
+        timeline.play();
+    }
     
     
     public static void main(String[] args) {
