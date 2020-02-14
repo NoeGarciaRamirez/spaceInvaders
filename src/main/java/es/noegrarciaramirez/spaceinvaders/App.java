@@ -79,7 +79,7 @@ public class App extends Application {
     int groupTerceraNaveY = -190;
     
     //Velocidad naves enemigas
-    short velocidadNavesEnemigas = 2;
+    short velocidadNavesEnemigas = 3;
     
     //Contador de impactos a cada nave
     short numImpactos1 = 0;
@@ -101,14 +101,42 @@ public class App extends Application {
     Label labelHighscore = new Label();
     Label labelFinPartida = new Label();
     //Pantalla inicial del juego
-    Button buttonEmpezar = new Button("Empezar partida");
-    //Pantalla de reinicio de partida
-    Button buttonReiniciar = new Button("Reiniciar");
-
+    Button buttonEmpezar = new Button();
+    
+    Button buttonReiniciar = new Button();
 
     VBox vbox = new VBox();
     Timeline timeline;
+    //Grupos
+    Group groupBoss1 = new Group();
+    Group grupoDisparoBoss1 = new Group();
+    Group groupDisparo = new Group();
+    Group groupPrimeraNave = new Group();
+    Group groupSegundaNave = new Group();
+    Group groupTerceraNave = new Group();
+    Group grupoNaveJ = new Group();
 
+    //Primera y segunda imagen del fondo para bucle
+    Image image1 = new Image(getClass().getResourceAsStream("/images/fondo.png"));
+    ImageView imageView1 = new ImageView(image1);
+
+    Image image2 = new Image(getClass().getResourceAsStream("/images/fondo2.png"));
+    ImageView imageView2 = new ImageView(image2);
+
+    //Imagen Nave del Jugador
+    Image image4 = new Image(getClass().getResourceAsStream("/images/naveUser.png"));
+    ImageView naveUser = new ImageView(image4);
+    
+    //Imagen iconoPlay
+    Image imagePlay = new Image(getClass().getResourceAsStream("/images/play.png"));
+    ImageView iconoPlay = new ImageView(imagePlay);
+    
+    //Imagen iconoReplay
+    Image imageReplay = new Image(getClass().getResourceAsStream("/images/replay.png"));
+    ImageView iconoReplay = new ImageView(imageReplay);
+    
+    //Crear número aleatorio para la X de las naves enemigas
+    Random random = new Random();
     @Override
     public void start(Stage stage) {
         
@@ -129,33 +157,36 @@ public class App extends Application {
         
         //Etiqueta fin de partida
         labelFinPartida.setVisible(false);
-        labelFinPartida.relocate((SCENE/2)-30, (SCENE/2)-80);
+        labelFinPartida.relocate((SCENE/2)-15, (SCENE/2)-80);
         labelFinPartida.setTextFill(WHITE);
         labelFinPartida.setText("GAME OVER");
         labelFinPartida.setMinWidth(400);
         labelFinPartida.setMaxWidth(400);
         labelFinPartida.setFont(new Font("Aclonica", 30));
         
-        //Pantalla de inicio del juego
+        //Elementos el vobx
         vbox.getChildren().add(buttonEmpezar);
         vbox.getChildren().add(buttonReiniciar);
+        buttonReiniciar.setStyle("-fx-background-color: transparent;");//Poner fondo de botón en transparente
         buttonReiniciar.setVisible(false);
+        buttonReiniciar.setTranslateX((SCENE/2)-75);
+        buttonReiniciar.setTranslateY((SCENE/2));
         vbox.setVisible(true);
+        buttonEmpezar.setStyle("-fx-background-color: transparent;");
+        buttonEmpezar.setTranslateX((SCENE/2)-47);
+        buttonEmpezar.setTranslateY((SCENE/2)-80);
+        buttonEmpezar.setGraphic (new ImageView(imagePlay));
+        iconoPlay.setFitHeight(30);
+        iconoPlay.setFitWidth(30);
+        buttonReiniciar.setGraphic (new ImageView(imageReplay));
+        buttonReiniciar.setPrefWidth(30);
+        buttonReiniciar.setPrefHeight(30);
+        iconoReplay.setFitHeight(30);
+        iconoReplay.setFitWidth(30);
         
-        //Primera y segunda imagen del fondo para bucle
-        Image image1 = new Image(getClass().getResourceAsStream("/images/fondo.png"));
-        ImageView imageView1 = new ImageView(image1);
-
-        Image image2 = new Image(getClass().getResourceAsStream("/images/fondo2.png"));
-        ImageView imageView2 = new ImageView(image2);
-
         //Imagen Boss1
         Image image3 = new Image(getClass().getResourceAsStream("/images/bossFinal.png"));
         ImageView bossF = new ImageView(image3);
-
-         //Imagen Nave del Jugador
-        Image image4 = new Image(getClass().getResourceAsStream("/images/naveUser.png"));
-        ImageView naveUser = new ImageView(image4);
 
         //Disparo de la nave Jugador
         Image image5 = new Image(getClass().getResourceAsStream("/images/disparoDeNave.png"));
@@ -189,7 +220,6 @@ public class App extends Application {
         Color c = new Color(0,0,0,0.0);
         hbBossF.setFill(c);
 
-        Group groupBoss1 = new Group();
         groupBoss1.getChildren().add(hbBossF);//rectangulo como hitbox
         groupBoss1.getChildren().add(bossF);//imagen
         groupBoss1.setLayoutX(SCENE);
@@ -200,7 +230,6 @@ public class App extends Application {
         Rectangle hbDisparoBoss1 = new Rectangle(20, 33);
         hbDisparoBoss1.setFill(c);
         
-        Group grupoDisparoBoss1 = new Group();
         grupoDisparoBoss1.getChildren().add(disparoBoss1);
         grupoDisparoBoss1.getChildren().add(hbDisparoBoss1);
         grupoDisparoBoss1.setLayoutX(SCENE);
@@ -218,16 +247,12 @@ public class App extends Application {
         //Disparo Jugador
         
         Rectangle hitBoxDisparo = new Rectangle (5, 13);//Rectangulo del disparo
-        Group groupDisparo = new Group();
         
         groupDisparo.getChildren().add(hitBoxDisparo);
         groupDisparo.getChildren().add(disparoRojo);
         
         groupDisparo.setLayoutX(posicionDisparoFuera);
         groupDisparo.setLayoutY(posicionDisparoFuera);
-        
-        //Crear número aleatorio para la X de las naves enemigas
-        Random random = new Random();
 
         //Cuerpo Nave 1 centro Verde
         Rectangle cuerpoNave1 = new Rectangle(xAlasNave, yAlasNave);//ala izquierda
@@ -247,14 +272,14 @@ public class App extends Application {
         Rectangle hB1 = new Rectangle (28+xAlasNave, yAlasNave);//Rectangulo que engloba la nave, para detectar la colison
         hB1.setFill(c);
         
-        Group groupPrimeraNave = new Group();
         groupPrimeraNave.getChildren().add(cuerpoNave1);
         groupPrimeraNave.getChildren().add(nave1);
         groupPrimeraNave.getChildren().add(cuerpoNave11);
         groupPrimeraNave.getChildren().add(hB1);
         
         //Posicion del grupo completo
-        groupPrimeraNave.setLayoutX(250);
+        int randomPosXNaveEnemiga1 = random.nextInt(SCENE-40);
+        groupPrimeraNave.setLayoutX(randomPosXNaveEnemiga1);
         groupPrimeraNave.setLayoutY(posicionNave1);
 
         //Cuerpo Nave 2 izquierda
@@ -275,14 +300,14 @@ public class App extends Application {
         Rectangle hB2 = new Rectangle (28+xAlasNave, yAlasNave);
         hB2.setFill(c);
         
-        Group groupSegundaNave = new Group();
         groupSegundaNave.getChildren().add(cuerpoNave2);
         groupSegundaNave.getChildren().add(nave2);
         groupSegundaNave.getChildren().add(cuerpoNave22);
         groupSegundaNave.getChildren().add(hB2);
         
         //Posicion del grupo completo
-        groupSegundaNave.setLayoutX(100);
+        int randomPosXNaveEnemiga2 = random.nextInt(SCENE-40);
+        groupSegundaNave.setLayoutX(randomPosXNaveEnemiga2);
         groupPrimeraNave.setLayoutY(250);
         
         //Cuerpo Nave 3 derecha
@@ -303,15 +328,15 @@ public class App extends Application {
         Rectangle hB3 = new Rectangle (28+xAlasNave, yAlasNave);
         hB3.setFill(c);
         
-        Group groupTerceraNave = new Group();
         groupTerceraNave.getChildren().add(cuerpoNave3);
         groupTerceraNave.getChildren().add(nave3);
         groupTerceraNave.getChildren().add(cuerpoNave33);
         groupTerceraNave.getChildren().add(hB3);
         
         //Posicion del grupo completo
-        groupTerceraNave.setLayoutX(400);
-        groupTerceraNave.setLayoutY(400);
+        int randomPosXNaveEnemiga3 = random.nextInt(SCENE-40);
+        groupTerceraNave.setLayoutX(randomPosXNaveEnemiga3);
+        groupTerceraNave.setLayoutY(360);
         
         //Nave del jugador
         naveUser.setFitHeight(60);
@@ -320,7 +345,6 @@ public class App extends Application {
         Rectangle hbNaveJ = new Rectangle(60, 60);
         hbNaveJ.setFill(c);
         
-        Group grupoNaveJ = new Group();
         grupoNaveJ.getChildren().add(hbNaveJ);
         grupoNaveJ.getChildren().add(naveUser);
         
@@ -361,7 +385,11 @@ public class App extends Application {
         root.getChildren().add(labelFinPartida);
         root.getChildren().add(vbox);
 
-
+        
+//        for (int i = 0; i < 3; i++) {
+//            
+//        }
+        
         //Movimiento de la naveJugador
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle (final KeyEvent keyEvent){
@@ -398,11 +426,11 @@ public class App extends Application {
                 public void handle(ActionEvent ae) {
                  
                     //labelHighscore
-                    labelPuntuacion.setText("Score " + score);//Obtener puntuacion
+                    labelPuntuacion.setText("Score: " + score);//Obtener puntuacion
                     //Comprobar si Highscore es mayor a la puntuación del jugador, y actualizarla en partida si es así
                     if(score>=highscore){
                         highscore=score;
-                        labelHighscore.setText("HighScore " + highscore);
+                        labelHighscore.setText("HighScore: " + highscore);
                     }
                     
                     grupoNaveJ.setLayoutX(posicionNaveJugador);
@@ -566,32 +594,33 @@ public class App extends Application {
                     
                     //Parar partida si Jugador llega a 0 vidas
                     if(contadorVidasJugador==0){
-                        System.out.println("contador = 0");
                         vbox.setVisible(true);
                         buttonEmpezar.setVisible(false);
                         buttonReiniciar.setVisible(true);
-                        labelFinPartida.relocate((SCENE/2)-70, (SCENE/2)-30);
-                        labelHighscore.relocate((SCENE/2)-20, (SCENE/2)+20);
-                        labelPuntuacion.relocate((SCENE/2)-20, (SCENE/2)+40);
+                        labelFinPartida.relocate((SCENE/2)-85, (SCENE/2)-130);
+                        labelHighscore.relocate((SCENE/2)-36, (SCENE/2)-70);
+                        labelPuntuacion.relocate((SCENE/2)-36, (SCENE/2)-50);
                         labelHighscore.setVisible(true);
                         labelPuntuacion.setVisible(true);
                         labelFinPartida.setVisible(true);
                         timeline.stop();
+                        buttonReiniciar.setOnAction((ActionEvent e)-> {//Qutia la vbox al presionar el botón
+                            reiniciarPartida();
+                        });
                     }
                     
-                    //Si impacta 3 veces en una nave, esa nave va más rápido
-                    //porque luego salen 3 naves y boss
+                    //Si impacta 3 veces en una nave, aumenta su velocidad de 2 a 4
                     if(numImpactos1>=3){
-                        velocidadNavesEnemigas=3;
+                        velocidadNavesEnemigas=4;
                     }
                     if(numImpactos2>=3){
-                        velocidadNavesEnemigas=3;
+                        velocidadNavesEnemigas=4;
                     }
                     if(numImpactos3>=3){
-                        velocidadNavesEnemigas=3;
+                        velocidadNavesEnemigas=4;
                     }
-                    //Sale el boss si impacta con cualquier nave 6 veces
-                    if((numImpactos1>=6) || (numImpactos2>=6) || (numImpactos3>=6)){
+                    //Sale el boss si impacta con cualquier nave 5 veces
+                    if((numImpactos1>=5) || (numImpactos2>=5) || (numImpactos3>=5)){
                         movimientoXBoss1 += velociadadBoss1 * direccionBoss1;
                         groupBoss1.setLayoutX(movimientoXBoss1);
                         yDisparoBoss1+=6;
@@ -656,27 +685,65 @@ public class App extends Application {
         }
     }
 
-    private void terminarPartida() {
-        vbox.setVisible(true);
-        buttonEmpezar.setVisible(false);
-        buttonReiniciar.setVisible(true);
-        timeline.stop();
-    }
     
     private void reiniciarPartida() {
         vbox.setVisible(false);
-        buttonEmpezar.setVisible(false);
-        buttonReiniciar.setVisible(true);
+        buttonReiniciar.setVisible(false);
+        
+        contadorVidasJugador = 3;
+        corazon1PosicionX = 5;
+        corazon2PosicionX = 5;
+        corazon3PosicionX = 5;
+        corazon3.setX(corazon1PosicionX);
+        corazon3.setY(390);
+        corazon2.setX(corazon2PosicionX);
+        corazon2.setY(415);
+        corazon1.setX(corazon3PosicionX);
+        corazon1.setY(440);
+        velocidadNavesEnemigas = 3;
+        numImpactos1 = 0;
+        numImpactos2 = 0;
+        numImpactos3 = 0;
+        movimientoXBoss1 = 0;
+        velociadadBoss1 = 7;
+        direccionBoss1 = 1;
+        contadorImpactosJefe = 0;
+        yDisparoBoss1 = 100;
+        score = 0;
+        groupPrimeraNaveY = -50;
+        groupSegundaNaveY = -120;
+        groupTerceraNaveY = -190;
+        labelPuntuacion.relocate(10, 10);
+        labelHighscore.relocate(100, 10);
+        labelFinPartida.setVisible(false);
+        groupBoss1.setLayoutX(SCENE);
+        grupoDisparoBoss1.setLayoutX(SCENE);
+        groupDisparo.setLayoutX(posicionDisparoFuera);
+        groupDisparo.setLayoutY(posicionDisparoFuera);
+        groupPrimeraNave.setLayoutX(250);
+        groupPrimeraNave.setLayoutY(posicionNave1);
+        groupSegundaNave.setLayoutX(100);
+        groupPrimeraNave.setLayoutY(250);
+        groupTerceraNave.setLayoutX(400);
+        groupTerceraNave.setLayoutY(400);
+        posicionNaveJugador = (int) ((SCENE/2)-(naveUser.getFitWidth()/2));
+        grupoNaveJ.setLayoutX(posicionNaveJugador);
+        grupoNaveJ.setLayoutY(SCENE-65);
+        imageView1.setX(0);
+        imageView1.setY(0);
+        imageView2.setX(0);
+        imageView2.setY(-SCENE);
+        
         timeline.play();
+    }
+    
+    private Random randomNum() {
+        System.out.println("a");
+        return random;
     }
 
-    private void comenzarPartida() {
-        vbox.setVisible(false);
-        buttonEmpezar.setVisible(false);
-        timeline.play();
-    }
-    
-    
+
+
     public static void main(String[] args) {
         launch();
     }
