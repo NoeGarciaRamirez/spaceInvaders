@@ -39,9 +39,9 @@ public class App extends Application {
     short xAlasNave = 8;
     short yAlasNave = 40;
     
-    int posicionNave1 = -50;//centro
-    int posicionNave2 = -120;//izquierda
-    int posicionNave3 = -190;//derecha
+    int posicionNave1;//centro
+    int posicionNave2;//izquierda
+    int posicionNave3;//derecha
     
     //Nave Jugador
     int posicionNaveJugador;//Posición nave jugador en la X
@@ -164,7 +164,7 @@ public class App extends Application {
         labelFinPartida.setMaxWidth(400);
         labelFinPartida.setFont(new Font("Aclonica", 30));
         
-        //Elementos el vobx
+        //Elementos en vobx
         vbox.getChildren().add(buttonEmpezar);
         vbox.getChildren().add(buttonReiniciar);
         buttonReiniciar.setStyle("-fx-background-color: transparent;");//Poner fondo de botón en transparente
@@ -409,6 +409,7 @@ public class App extends Application {
                         groupDisparo.setLayoutX(posicionNaveJugador+28);
                         groupDisparo.setLayoutY(posicionDisparoDentroY);
                         random.nextInt(SCENE-40);//genera num aleatorio para darselo a la X de las naves enemigas
+                        System.out.println("Disparo");
                     break;
                 }
             }
